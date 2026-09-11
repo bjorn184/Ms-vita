@@ -38,6 +38,76 @@
             display: flex;
             justify-content: center;
         }
+
+        /* Welkomstscherm / Splash Screen Stijl */
+        #splashScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #090d16, #0e7490);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        #splashScreen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .splash-logo {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #0e7490, #06b6d4);
+            border-radius: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(6, 182, 212, 0.4);
+            margin-bottom: 20px;
+            animation: pulseSplash 2s infinite ease-in-out;
+        }
+        .splash-logo svg {
+            width: 50px;
+            height: 50px;
+            fill: #ffffff;
+        }
+        @keyframes pulseSplash {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        #splashScreen h2 {
+            margin: 0 0 6px;
+            font-size: 2rem;
+            color: #ffffff;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        #splashScreen p {
+            margin: 0 0 30px;
+            font-size: 0.95rem;
+            color: #cffafe;
+        }
+        .splash-btn {
+            background: #ffffff;
+            color: #0e7490;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: transform 0.2s, background 0.2s;
+        }
+        .splash-btn:hover {
+            transform: scale(1.05);
+            background: #f0fdfa;
+        }
+
         .app-container {
             width: 100%;
             max-width: 650px;
@@ -283,6 +353,20 @@
 </head>
 <body>
 
+    <!-- Welkomstscherm / Splash Screen -->
+    <div id="splashScreen">
+        <div class="splash-logo">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                <path d="M256 110v292M110 256h292" stroke="#ffffff" stroke-width="48" stroke-linecap="round" opacity="0.3"/>
+                <path d="M160 270l45-50 45 75 55-90 45 65" fill="none" stroke="#ffffff" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="350" cy="160" r="24" fill="#ffffff"/>
+            </svg>
+        </div>
+        <h2>MS Vita</h2>
+        <p>Jouw geavanceerde zorg- en voortgangsmonitor</p>
+        <button class="splash-btn" onclick="openApp()">Open App</button>
+    </div>
+
 <div class="app-container">
     <header>
         <h1>MS Vita</h1>
@@ -447,6 +531,25 @@
 </div>
 
 <script>
+    // Functie om het welkomstscherm weg te klikken en over te schakelen
+    function openApp() {
+        const splash = document.getElementById('splashScreen');
+        splash.classList.add('hidden');
+        setTimeout(() => {
+            splash.style.display = 'none';
+        }, 600); // Wacht tot fade-out animatie klaar is
+    }
+
+    // Optioneel: Na 1.8 seconden automatisch doorsturen als de gebruiker niet klikt
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const splash = document.getElementById('splashScreen');
+            if (splash && !splash.classList.contains('hidden')) {
+                openApp();
+            }
+        }, 1800);
+    });
+
     // Dynamische PWA Manifest Blob aanmaken
     const manifestData = {
         "name": "MS Vita Geavanceerde Zorgmonitor",
@@ -471,7 +574,7 @@
     if ('serviceWorker' in navigator) {
         const swCode = `
             self.addEventListener('install', (e) => {
-                e.waitUntil(caches.open('ms-vita-v5').then((cache) => cache.addAll(['./'])));
+                e.waitUntil(caches.open('ms-vita-v6').then((cache) => cache.addAll(['./'])));
             });
             self.addEventListener('fetch', (e) => {
                 e.respondWith(caches.match(e.request).then((response) => response || fetch(e.request)));
@@ -616,7 +719,6 @@
         }
         list.innerHTML = '<strong>Opgeslagen Dagen Beheren:</strong>';
         
-        // Loop door alle entries in omgekeerde volgorde (nieuwste bovenaan)
         [...entries].reverse().forEach((e, originalIndex) => {
             const actualIndex = entries.length - 1 - originalIndex;
             const div = document.createElement('div');
