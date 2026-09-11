@@ -10,20 +10,17 @@
   "start_url": "/Ms-vita/",
   "theme_color": "#090d16",
   "icons": [
-    {
-      "src": "https://bjorn184.github.io/Ms-vita/icon-192.png",
-      "type": "image/png",
-      "sizes": "192x192",
-      "isSquare": true,
-      "isPng": true,
-      "isWebp": false,
-      "isJpg": false,
-      "width": 192,
-      "is512x512": false,
-      "is256x256": false,
-      "is192x192": true
-    }
-  ],
+  {
+    "src": "./icon-192.png",
+    "type": "image/png",
+    "sizes": "192x192"
+  },
+  {
+    "src": "./icon-512.png",
+    "type": "image/png",
+    "sizes": "512x512"
+  }
+],
   "id": "/Ms-vita/",
   "lang": "nl"
 }
