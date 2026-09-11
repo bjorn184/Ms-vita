@@ -400,7 +400,7 @@
                 <option value="Goed (Weinig klachten)">Goed (Weinig klachten)</option>
                 <option value="Matig (Vermoeid / Lichte last)">Matig (Vermoeid / Lichte last)</option>
                 <option value="Slecht (Veel klachten / Stijfheid)">Slecht (Veel klachten / Stijfheid)</option>
-                <option value="Rot (Flared-up / Zware dag)">Rot (Flared-up / Zware dag)</option>
+                <option value="Zwaar / Belastend (Flared-up / Zware dag)">Zwaar / Belastend (Flared-up / Zware dag)</option>
             </select>
         </div>
 
@@ -574,7 +574,7 @@
     if ('serviceWorker' in navigator) {
         const swCode = `
             self.addEventListener('install', (e) => {
-                e.waitUntil(caches.open('ms-vita-v6').then((cache) => cache.addAll(['./'])));
+                e.waitUntil(caches.open('ms-vita-v7').then((cache) => cache.addAll(['./'])));
             });
             self.addEventListener('fetch', (e) => {
                 e.respondWith(caches.match(e.request).then((response) => response || fetch(e.request)));
@@ -669,7 +669,7 @@
             'Goed (Weinig klachten)': 0,
             'Matig (Vermoeid / Lichte last)': 0,
             'Slecht (Veel klachten / Stijfheid)': 0,
-            'Rot (Flared-up / Zware dag)': 0
+            'Zwaar / Belastend (Flared-up / Zware dag)': 0
         };
 
         entries.forEach(e => { if (counts[e.status] !== undefined) counts[e.status]++; });
