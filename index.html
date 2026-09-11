@@ -5,36 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MS & Voortgangsmonitor</title>
     
-    <!-- PWA Web App Manifest met direct gekoppeld icoon -->
-    <meta name="theme-color" content="#0f172a">
-    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,{
-        %22name%22: %22MS Voortgangsmonitor%22,
-        %22short_name%22: %22MS Monitor%22,
-        %22start_url%22: %22./index.html%22,
-        %22display%22: %22standalone%22,
-        %22background_color%22: %22%230f172a%22,
-        %22theme_color%22: %22%230f172a%22,
-        %22icons%22: [{
-            %22src%22: %22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%231e293b'/%3E%3Ctext x='50%25' y='55%25' font-size='160' font-family='sans-serif' font-weight='bold' fill='%2338bdf8' text-anchor='middle' dominant-baseline='middle'%3EMS%3C/text%3E%3C/svg%3E%22,
-            %22sizes%22: %22192x192 512x512%22,
-            %22type%22: %22image/svg+xml%22
-        }]
+    <!-- PWA Web App Manifest direct gekoppeld -->
+    <meta name="theme-color" content="#0F172A">
+    <link rel="manifest" href="data:application/manifest+json,{
+        &quot;name&quot;: &quot;MS Voortgangsmonitor&quot;,
+        &quot;short_name&quot;: &quot;MS-Vita&quot;,
+        &quot;start_url&quot;: &quot;./index.html&quot;,
+        &quot;display&quot;: &quot;standalone&quot;,
+        &quot;background_color&quot;: &quot;#0F172A&quot;,
+        &quot;theme_color&quot;: &quot;#0F172A&quot;,
+        &quot;icons&quot;: [
+            {
+                &quot;src&quot;: &quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230F172A'/%3E%3Ctext x='50%25' y='50%25' font-size='220' fill='%23FFF' dominant-baseline='middle' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E&quot;,
+                &quot;sizes&quot;: &quot;512x512&quot;,
+                &quot;type&quot;: &quot;image/svg+xml&quot;
+            }
+        ]
     }">
-    
-    <!-- Apple Touch Icoon voor iOS -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%231e293b'/%3E%3Ctext x='50%25' y='55%25' font-size='160' font-family='sans-serif' font-weight='bold' fill='%2338bdf8' text-anchor='middle' dominant-baseline='middle'%3EMS%3C/text%3E%3C/svg%3E">
 
     <!-- Chart.js bibliotheek voor offline grafieken -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-color: #f8fafc;
-            --accent: #38bdf8;
+            --bg-color: #0F172A;
+            --card-bg: #1E293B;
+            --text-color: #F8FAFC;
+            --accent: #38BDF8;
             --border: #334155;
         }
+
         body {
             font-family: system-ui, -apple-system, sans-serif;
             background-color: var(--bg-color);
@@ -42,312 +42,276 @@
             margin: 0;
             padding: 16px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
         }
-        .container {
+
+        header {
             width: 100%;
             max-width: 600px;
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
         }
+
         h1 {
             font-size: 1.4rem;
-            margin-top: 0;
-            text-align: center;
+            margin: 0;
             color: var(--accent);
         }
-        .form-group {
-            margin-bottom: 14px;
-        }
-        label {
-            display: block;
-            margin-bottom: 4px;
-            font-size: 0.85rem;
-            color: #cbd5e1;
-        }
-        input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: #0f172a;
-            color: white;
-            box-sizing: border-box;
-            font-family: inherit;
-            font-size: 0.95rem;
-        }
-        textarea {
-            resize: vertical;
-            height: 60px;
-        }
-        .checkbox-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+
+        .tabs {
+            display: flex;
             gap: 8px;
-            background: #0f172a;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 16px;
         }
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            font-size: 0.82rem;
-            color: #cbd5e1;
-            cursor: pointer;
-        }
-        .checkbox-label input {
-            width: auto;
-            margin-right: 8px;
-        }
-        .btn-row {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        button {
+
+        .tab-btn {
             flex: 1;
-            padding: 12px;
-            background: var(--accent);
-            color: #0f172a;
-            border: none;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border);
+            padding: 10px;
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
             font-size: 0.95rem;
-            transition: opacity 0.2s;
         }
-        button.secondary {
-            background: #334155;
-            color: var(--text-color);
+
+        .tab-btn.active {
+            background-color: var(--accent);
+            color: var(--bg-color);
+            border-color: var(--accent);
         }
-        button:hover {
-            opacity: 0.9;
-        }
-        .chart-container {
-            position: relative;
-            margin-top: 25px;
-            height: 280px;
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
             width: 100%;
+            max-width: 600px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 16px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            color: #94A3B8;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            background-color: #0F172A;
+            border: 1px solid var(--border);
+            color: var(--text-color);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .checkbox-label {
             display: flex;
-            justify-content: center;
-        }
-        .history-list {
-            margin-top: 20px;
-            max-height: 160px;
-            overflow-y: auto;
-            border-top: 1px solid var(--border);
-            padding-top: 10px;
-        }
-        .history-item {
-            font-size: 0.82rem;
-            padding: 6px 0;
-            border-bottom: 1px solid #334155;
-            display: flex;
-            justify-content: space-between;
-        }
-        .history-actions {
-            margin-top: 10px;
-            text-align: right;
-        }
-        .btn-small {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-color);
+            font-size: 0.9rem;
             cursor: pointer;
+        }
+
+        .checkbox-label input {
+            width: auto;
+            margin-bottom: 0;
+        }
+
+        button.action-btn {
+            background-color: var(--accent);
+            color: var(--bg-color);
+            border: none;
+            padding: 12px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            margin-top: 4px;
+        }
+
+        button.action-btn:hover {
+            opacity: 0.9;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>MS & Voortgangsmonitor</h1>
-    
-    <div class="form-group">
-        <label for="date">Datum:</label>
-        <input type="date" id="date">
+    <header>
+        <h1>MS & Voortgangsmonitor</h1>
+        <span>PWA</span>
+    </header>
+
+    <!-- Navigatie Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" id="btn-form" onclick="switchTab('form')">Dagboek</button>
+        <button class="tab-btn" id="btn-charts" onclick="switchTab('charts')">Grafieken</button>
     </div>
 
-    <div class="form-group">
-        <label for="status">Algemene Dagstatus:</label>
-        <select id="status">
-            <option value="Goed (Weinig klachten)">Goed (Weinig klachten)</option>
-            <option value="Matig (Vermoeid / Lichte last)">Matig (Vermoeid / Lichte last)</option>
-            <option value="Slecht (Veel klachten / Stijfheid)">Slecht (Veel klachten / Stijfheid)</option>
-            <option value="Rot (Flared-up / Zware dag)">Rot (Flared-up / Zware dag)</option>
+    <!-- Tab 1: Formulier / Dagboek -->
+    <div class="card" id="section-form">
+        <label for="entry-date">Datum:</label>
+        <input type="date" id="entry-date">
+
+        <label for="daily-status">Algemene Dagstatus:</label>
+        <select id="daily-status">
+            <option value="Goed">Goed (Weinig klachten)</option>
+            <option value="Matig">Matig</option>
+            <option value="Slecht">Slecht (Veel klachten)</option>
         </select>
-    </div>
 
-    <div class="form-group">
-        <label for="fatigue">Vermoeidheid (1 = Minimaal, 5 = Extreem):</label>
-        <select id="fatigue">
+        <label for="fatigue-level">Vermoeidheid (1 = Minimaal, 5 = Extreem):</label>
+        <select id="fatigue-level">
             <option value="1">1 - Minimaal</option>
             <option value="2">2 - Licht</option>
             <option value="3" selected>3 - Matig</option>
             <option value="4">4 - Hoog</option>
             <option value="5">5 - Extreem</option>
         </select>
-    </div>
 
-    <div class="form-group">
         <label>Specifieke Klachten / Symptomen:</label>
         <div class="checkbox-grid">
-            <label class="checkbox-label"><input type="checkbox" value="Tintelingen" class="symptom"> Tintelingen / Gevoelloos</label>
-            <label class="checkbox-label"><input type="checkbox" value="Spierstijfheid" class="symptom"> Spierstijfheid / Spasmen</label>
-            <label class="checkbox-label"><input type="checkbox" value="Balans" class="symptom"> Balans / Coördinatie</label>
-            <label class="checkbox-label"><input type="checkbox" value="Brain fog" class="symptom"> Brain fog / Focus</label>
-            <label class="checkbox-label"><input type="checkbox" value="Zicht" class="symptom"> Zichtproblemen</label>
-            <label class="checkbox-label"><input type="checkbox" value="Warmtegevoelig" class="symptom"> Warmtegevoelig (Uthoff)</label>
+            <label class="checkbox-label"><input type="checkbox" value="Tintelingen"> Tintelingen / Gevoelloos</label>
+            <label class="checkbox-label"><input type="checkbox" value="Spierstijfheid"> Spierstijfheid / Spasmen</label>
+            <label class="checkbox-label"><input type="checkbox" value="Balans"> Balans / Coördinatie</label>
+            <label class="checkbox-label"><input type="checkbox" value="Brain fog"> Brain fog / Focus</label>
+            <label class="checkbox-label"><input type="checkbox" value="Zichtproblemen"> Zichtproblemen</label>
+            <label class="checkbox-label"><input type="checkbox" value="Warmtegevoelig"> Warmtegevoelig (Uthoff)</label>
+        </div>
+
+        <label for="notes">Notities (Triggers, slaap, medicatie):</label>
+        <textarea id="notes" rows="3" placeholder="Bijv. slechte nachtrust, warm weer, drukke dag..."></textarea>
+
+        <button class="action-btn" onclick="saveEntry()">Sla Dag op</button>
+    </div>
+
+    <!-- Tab 2: Grafieken -->
+    <div class="card hidden" id="section-charts">
+        <h2 style="font-size: 1.2rem; margin-top: 0; color: var(--accent);">Voortgang over tijd</h2>
+        <p style="font-size: 0.85rem; color: #94A3B8; margin-bottom: 16px;">Hier zie je de opgeslagen vermoeidheid en statusontwikkeling.</p>
+        
+        <div style="position: relative; height: 250px; width: 100%;">
+            <canvas id="progressChart"></canvas>
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="notes">Notities (Triggers, slaap, medicatie):</label>
-        <textarea id="notes" placeholder="Bijv. slechte nachtrust, warm weer, drukke dag..."></textarea>
-    </div>
+    <script>
+        // Automatisch de huidige datum instellen
+        document.getElementById('entry-date').valueAsDate = new Date();
 
-    <div class="btn-row">
-        <button onclick="addEntry()">Sla Dag op</button>
-        <button class="secondary" onclick="exportData()">Exporteer Backup</button>
-    </div>
+        function switchTab(tabName) {
+            const formSection = document.getElementById('section-form');
+            const chartsSection = document.getElementById('section-charts');
+            const btnForm = document.getElementById('btn-form');
+            const btnCharts = document.getElementById('btn-charts');
 
-    <div class="chart-container">
-        <canvas id="moodChart"></canvas>
-    </div>
-
-    <div class="history-list" id="historyList"></div>
-    <div class="history-actions" id="historyActions" style="display:none;">
-        <button class="btn-small" onclick="clearAllData()">Wis alle geschiedenis</button>
-    </div>
-</div>
-
-<script>
-    document.getElementById('date').valueAsDate = new Date();
-
-    let entries = JSON.parse(localStorage.getItem('ms_tracker_data')) || [];
-    let chart;
-
-    function initChart() {
-        const ctx = document.getElementById('moodChart').getContext('2d');
-        
-        entries.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-        const counts = {
-            'Goed (Weinig klachten)': 0,
-            'Matig (Vermoeid / Lichte last)': 0,
-            'Slecht (Veel klachten / Stijfheid)': 0,
-            'Rot (Flared-up / Zware dag)': 0
-        };
-
-        entries.forEach(e => {
-            if (counts[e.status] !== undefined) {
-                counts[e.status]++;
+            if (tabName === 'form') {
+                formSection.classList.remove('hidden');
+                chartsSection.classList.add('hidden');
+                btnForm.classList.add('active');
+                btnCharts.classList.remove('active');
+            } else {
+                formSection.classList.add('hidden');
+                chartsSection.classList.remove('hidden');
+                btnCharts.classList.add('active');
+                btnForm.classList.remove('active');
+                loadChartData();
             }
-        });
+        }
 
-        if (chart) chart.destroy();
+        function saveEntry() {
+            const entry = {
+                date: document.getElementById('entry-date').value,
+                status: document.getElementById('daily-status').value,
+                fatigue: document.getElementById('fatigue-level').value,
+                notes: document.getElementById('notes').value
+            };
 
-        chart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: Object.keys(counts),
-                datasets: [{
-                    data: Object.values(counts),
-                    backgroundColor: ['#4ade80', '#facc15', '#fb923c', '#f87171'],
-                    borderWidth: 1,
-                    borderColor: '#1e293b'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: { color: '#cbd5e1', font: { size: 10 } }
+            let entries = JSON.parse(localStorage.getItem('ms_vita_entries') || '[]');
+            entries.push(entry);
+            localStorage.setItem('ms_vita_entries', JSON.stringify(entries));
+
+            alert('Dag succesvol opgeslagen!');
+        }
+
+        let myChart = null;
+
+        function loadChartData() {
+            const entries = JSON.parse(localStorage.getItem('ms_vita_entries') || '[]');
+            
+            // Sorteer op datum
+            entries.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            const labels = entries.map(e => e.date);
+            const fatigueData = entries.map(e => parseInt(e.fatigue));
+
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            
+            if (myChart) {
+                myChart.destroy();
+            }
+
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Vermoeidheid (1-5)',
+                        data: fatigueData,
+                        borderColor: '#38BDF8',
+                        backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5,
+                            ticks: { stepSize: 1, color: '#94A3B8' },
+                            grid: { color: '#334155' }
+                        },
+                        x: {
+                            ticks: { color: '#94A3B8' },
+                            grid: { color: '#334155' }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#F8FAFC' } }
                     }
                 }
-            }
-        });
-
-        updateHistory();
-    }
-
-    function updateHistory() {
-        const list = document.getElementById('historyList');
-        const actions = document.getElementById('historyActions');
-        
-        if (entries.length === 0) {
-            list.innerHTML = '<span style="font-size: 0.8rem; color: #94a3b8;">Nog geen dagen geregistreerd.</span>';
-            actions.style.display = 'none';
-            return;
+            });
         }
-
-        actions.style.display = 'block';
-        list.innerHTML = '<strong>Laatste registraties:</strong><br>';
-        
-        const recent = [...entries].reverse().slice(0, 5);
-        recent.forEach(e => {
-            const div = document.createElement('div');
-            div.className = 'history-item';
-            let symText = e.symptoms && e.symptoms.length > 0 ? ` [${e.symptoms.join(', ')}]` : '';
-            div.innerHTML = `<span><strong>${e.date}</strong>: ${e.status} (Vermoeid: ${e.fatigue})${symText}</span>`;
-            list.appendChild(div);
-        });
-    }
-
-    function addEntry() {
-        const date = document.getElementById('date').value;
-        const status = document.getElementById('status').value;
-        const fatigue = document.getElementById('fatigue').value;
-        const notes = document.getElementById('notes').value;
-        
-        const symptoms = [];
-        document.querySelectorAll('.symptom:checked').forEach(cb => {
-            symptoms.push(cb.value);
-        });
-
-        if (!date) return alert('Kies eerst een datum.');
-
-        entries = entries.filter(e => e.date !== date);
-        entries.push({ date, status, fatigue, symptoms, notes });
-
-        localStorage.setItem('ms_tracker_data', JSON.stringify(entries));
-        initChart();
-        
-        document.getElementById('notes').value = '';
-        document.querySelectorAll('.symptom').forEach(cb => cb.checked = false);
-        alert('Dag succesvol opgeslagen!');
-    }
-
-    function exportData() {
-        if (entries.length === 0) return alert('Geen data om te exporteren.');
-        
-        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(entries, null, 2));
-        let downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", "ms_monitor_backup.json");
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
-    }
-
-    function clearAllData() {
-        if (confirm('Weet je zeker dat je alle opgeslagen geschiedenis wilt wissen?')) {
-            localStorage.removeItem('ms_tracker_data');
-            entries = [];
-            initChart();
-        }
-    }
-
-    initChart();
-</script>
-
+    </script>
 </body>
 </html>
