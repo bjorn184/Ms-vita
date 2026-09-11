@@ -3,315 +3,689 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MS & Voortgangsmonitor</title>
+    <title>MS Vita - Geavanceerde Zorgmonitor</title>
     
-    <!-- PWA Web App Manifest direct gekoppeld -->
-    <meta name="theme-color" content="#0F172A">
-    <link rel="manifest" href="data:application/manifest+json,{
-        &quot;name&quot;: &quot;MS Voortgangsmonitor&quot;,
-        &quot;short_name&quot;: &quot;MS-Vita&quot;,
-        &quot;start_url&quot;: &quot;./index.html&quot;,
-        &quot;display&quot;: &quot;standalone&quot;,
-        &quot;background_color&quot;: &quot;#0F172A&quot;,
-        &quot;theme_color&quot;: &quot;#0F172A&quot;,
-        &quot;icons&quot;: [
-            {
-                &quot;src&quot;: &quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230F172A'/%3E%3Ctext x='50%25' y='50%25' font-size='220' fill='%23FFF' dominant-baseline='middle' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E&quot;,
-                &quot;sizes&quot;: &quot;512x512&quot;,
-                &quot;type&quot;: &quot;image/svg+xml&quot;
-            }
-        ]
-    }">
+    <!-- Dynamisch PWA Manifest Blob voor gegarandeerde installatie -->
+    <meta name="theme-color" content="#090d16">
+    <link id="pwaManifest" rel="manifest" href="">
+    
+    <!-- Apple Touch Icoon met Vernieuwd Design -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%230f172a'/%3E%3Cstop offset='100%25' stop-color='%2304060b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='120' fill='url(%23bg)'/%3E%3Cpath d='M256 110v292M110 256h292' stroke='%2306b6d4' stroke-width='48' stroke-linecap='round' opacity='0.25'/%3E%3Cpath d='M160 270l45-50 45 75 55-90 45 65' fill='none' stroke='%2338bdf8' stroke-width='22' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='350' cy='160' r='24' fill='%2306b6d4' opacity='0.8'/%3E%3C/svg%3E">
 
-    <!-- Chart.js bibliotheek voor offline grafieken -->
+    <!-- Chart.js voor grafieken -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         :root {
-            --bg-color: #0F172A;
-            --card-bg: #1E293B;
-            --text-color: #F8FAFC;
-            --accent: #38BDF8;
-            --border: #334155;
+            --bg: #090d16;
+            --surface: #111827;
+            --surface-card: #1f2937;
+            --text: #f3f4f6;
+            --text-muted: #9ca3af;
+            --primary: #06b6d4;
+            --primary-hover: #0891b2;
+            --border: #374151;
+            --danger: #ef4444;
+            --success: #10b981;
         }
-
+        * { box-sizing: border-box; }
         body {
             font-family: system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: var(--bg);
+            color: var(--text);
             margin: 0;
-            padding: 16px;
+            padding: 12px;
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            justify-content: center;
         }
-
-        header {
+        .app-container {
             width: 100%;
-            max-width: 600px;
-            display: flex;
+            max-width: 650px;
+            background: var(--surface);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+        header {
+            background: linear-gradient(135deg, #0e7490, #06b6d4);
+            padding: 20px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #ffffff;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        header p {
+            margin: 4px 0 0;
+            font-size: 0.85rem;
+            color: #cffafe;
+        }
+        /* Installatie Banner Stijl */
+        #installBanner {
+            display: none;
+            background: #0891b2;
+            color: white;
+            padding: 12px 15px;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border);
         }
-
-        h1 {
-            font-size: 1.4rem;
-            margin: 0;
-            color: var(--accent);
-        }
-
-        .tabs {
-            display: flex;
-            gap: 8px;
-            width: 100%;
-            max-width: 600px;
-            margin-bottom: 16px;
-        }
-
-        .tab-btn {
-            flex: 1;
-            background-color: var(--card-bg);
-            color: var(--text-color);
-            border: 1px solid var(--border);
-            padding: 10px;
-            border-radius: 8px;
+        #installBanner button {
+            background: white;
+            color: #0e7490;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
-            font-size: 0.95rem;
         }
-
+        /* Navigatie Tabs */
+        .nav-tabs {
+            display: flex;
+            background: #0b0f19;
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px 8px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.75rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            text-align: center;
+        }
         .tab-btn.active {
-            background-color: var(--accent);
-            color: var(--bg-color);
-            border-color: var(--accent);
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            background: rgba(6, 182, 212, 0.05);
         }
-
-        .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
+        .tab-content {
+            display: none;
             padding: 20px;
-            width: 100%;
-            max-width: 600px;
-            box-sizing: border-box;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            max-height: 72vh;
+            overflow-y: auto;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        /* Formulier Componenten */
+        .form-group {
             margin-bottom: 16px;
         }
-
-        .hidden {
-            display: none;
-        }
-
         label {
             display: block;
             margin-bottom: 6px;
-            font-size: 0.9rem;
-            color: #94A3B8;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
         }
-
         input, select, textarea {
             width: 100%;
-            background-color: #0F172A;
+            padding: 11px 14px;
+            border-radius: 10px;
             border: 1px solid var(--border);
-            color: var(--text-color);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 14px;
-            box-sizing: border-box;
-            font-size: 1rem;
+            background: var(--surface-card);
+            color: var(--text);
+            font-size: 0.95rem;
+            font-family: inherit;
         }
-
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        textarea { resize: vertical; height: 70px; }
         .checkbox-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
-            margin-bottom: 14px;
+            background: var(--surface-card);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
         }
-
         .checkbox-label {
             display: flex;
             align-items: center;
-            gap: 8px;
-            color: var(--text-color);
-            font-size: 0.9rem;
+            font-size: 0.82rem;
+            color: var(--text);
             cursor: pointer;
         }
-
         .checkbox-label input {
             width: auto;
-            margin-bottom: 0;
+            margin-right: 8px;
         }
-
-        button.action-btn {
-            background-color: var(--accent);
-            color: var(--bg-color);
-            border: none;
-            padding: 12px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
+        /* Knoppen */
+        .btn {
             width: 100%;
-            font-size: 1rem;
-            margin-top: 4px;
+            padding: 12px;
+            background: var(--primary);
+            color: #090d16;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.2s;
         }
-
-        button.action-btn:hover {
-            opacity: 0.9;
+        .btn:hover { background: var(--primary-hover); }
+        .btn-secondary {
+            background: var(--surface-card);
+            color: var(--text);
+            border: 1px solid var(--border);
+            margin-top: 8px;
+        }
+        .btn-secondary:hover { background: #374151; }
+        /* Copilot Chat */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 380px;
+        }
+        .chat-messages {
+            flex: 1;
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .message {
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            max-width: 85%;
+            line-height: 1.4;
+        }
+        .message.user {
+            background: var(--primary);
+            color: #090d16;
+            align-self: flex-end;
+            font-weight: 500;
+        }
+        .message.bot {
+            background: #374151;
+            color: var(--text);
+            align-self: flex-start;
+        }
+        .chat-input-row {
+            display: flex;
+            gap: 8px;
+        }
+        .chat-input-row input { flex: 1; }
+        .chat-input-row button { width: 90px; }
+        /* Agenda & Medicatie Lijsten */
+        .card-item {
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card-info h4 { margin: 0 0 4px; font-size: 0.95rem; color: var(--primary); }
+        .card-info p { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
+        .med-badge {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid var(--success);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .chart-container {
+            margin-top: 20px;
+            height: 240px;
+            position: relative;
+        }
+        .history-list {
+            margin-top: 15px;
+            border-top: 1px solid var(--border);
+            padding-top: 10px;
+        }
+        .history-row {
+            font-size: 0.8rem;
+            padding: 6px 0;
+            border-bottom: 1px solid #1f2937;
+            display: flex;
+            justify-content: space-between;
         }
     </style>
 </head>
 <body>
 
+<div class="app-container">
     <header>
-        <h1>MS & Voortgangsmonitor</h1>
-        <span>PWA</span>
+        <h1>MS Vita</h1>
+        <p>Jouw geavanceerde dagelijkse zorg- en voortgangsmonitor</p>
     </header>
 
-    <!-- Navigatie Tabs -->
-    <div class="tabs">
-        <button class="tab-btn active" id="btn-form" onclick="switchTab('form')">Dagboek</button>
-        <button class="tab-btn" id="btn-charts" onclick="switchTab('charts')">Grafieken</button>
+    <!-- PWA Installatie Banner -->
+    <div id="installBanner">
+        <span>Installeer MS Vita als app op je startscherm!</span>
+        <button id="installBtn">Installeer</button>
     </div>
 
-    <!-- Tab 1: Formulier / Dagboek -->
-    <div class="card" id="section-form">
-        <label for="entry-date">Datum:</label>
-        <input type="date" id="entry-date">
+    <!-- Navigatie -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab(event, 'tab-monitor')">📊 Monitor</button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-copilot')">🤖 MS Copilot</button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-agenda')">📅 Agenda</button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-medicatie')">💊 Medicatie (BE)</button>
+    </div>
 
-        <label for="daily-status">Algemene Dagstatus:</label>
-        <select id="daily-status">
-            <option value="Goed">Goed (Weinig klachten)</option>
-            <option value="Matig">Matig</option>
-            <option value="Slecht">Slecht (Veel klachten)</option>
-        </select>
-
-        <label for="fatigue-level">Vermoeidheid (1 = Minimaal, 5 = Extreem):</label>
-        <select id="fatigue-level">
-            <option value="1">1 - Minimaal</option>
-            <option value="2">2 - Licht</option>
-            <option value="3" selected>3 - Matig</option>
-            <option value="4">4 - Hoog</option>
-            <option value="5">5 - Extreem</option>
-        </select>
-
-        <label>Specifieke Klachten / Symptomen:</label>
-        <div class="checkbox-grid">
-            <label class="checkbox-label"><input type="checkbox" value="Tintelingen"> Tintelingen / Gevoelloos</label>
-            <label class="checkbox-label"><input type="checkbox" value="Spierstijfheid"> Spierstijfheid / Spasmen</label>
-            <label class="checkbox-label"><input type="checkbox" value="Balans"> Balans / Coördinatie</label>
-            <label class="checkbox-label"><input type="checkbox" value="Brain fog"> Brain fog / Focus</label>
-            <label class="checkbox-label"><input type="checkbox" value="Zichtproblemen"> Zichtproblemen</label>
-            <label class="checkbox-label"><input type="checkbox" value="Warmtegevoelig"> Warmtegevoelig (Uthoff)</label>
+    <!-- TAB 1: MONITOR & DAGSTATUS -->
+    <div id="tab-monitor" class="tab-content active">
+        <div class="form-group">
+            <label for="date">Datum:</label>
+            <input type="date" id="date">
         </div>
 
-        <label for="notes">Notities (Triggers, slaap, medicatie):</label>
-        <textarea id="notes" rows="3" placeholder="Bijv. slechte nachtrust, warm weer, drukke dag..."></textarea>
+        <div class="form-group">
+            <label for="status">Algemene Dagstatus:</label>
+            <select id="status">
+                <option value="Goed (Weinig klachten)">Goed (Weinig klachten)</option>
+                <option value="Matig (Vermoeid / Lichte last)">Matig (Vermoeid / Lichte last)</option>
+                <option value="Slecht (Veel klachten / Stijfheid)">Slecht (Veel klachten / Stijfheid)</option>
+                <option value="Rot (Flared-up / Zware dag)">Rot (Flared-up / Zware dag)</option>
+            </select>
+        </div>
 
-        <button class="action-btn" onclick="saveEntry()">Sla Dag op</button>
+        <div class="form-group">
+            <label for="fatigue">Vermoeidheid (1 = Minimaal, 5 = Extreem):</label>
+            <select id="fatigue">
+                <option value="1">1 - Minimaal</option>
+                <option value="2">2 - Licht</option>
+                <option value="3" selected>3 - Matig</option>
+                <option value="4">4 - Hoog</option>
+                <option value="5">5 - Extreem</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Specifieke Klachten / Symptomen:</label>
+            <div class="checkbox-grid">
+                <label class="checkbox-label"><input type="checkbox" value="Tintelingen" class="symptom"> Tintelingen</label>
+                <label class="checkbox-label"><input type="checkbox" value="Spierstijfheid" class="symptom"> Spierstijfheid</label>
+                <label class="checkbox-label"><input type="checkbox" value="Balans" class="symptom"> Balans / Coördinatie</label>
+                <label class="checkbox-label"><input type="checkbox" value="Brain fog" class="symptom"> Brain fog</label>
+                <label class="checkbox-label"><input type="checkbox" value="Zicht" class="symptom"> Zichtproblemen</label>
+                <label class="checkbox-label"><input type="checkbox" value="Warmtegevoelig" class="symptom"> Warmtegevoelig</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="notes">Persoonlijke Notities / Triggers:</label>
+            <textarea id="notes" placeholder="Bijv. slechte nachtrust, drukte, warm weer..."></textarea>
+        </div>
+
+        <button class="btn" onclick="addEntry()">Sla Dag op</button>
+        <button class="btn btn-secondary" onclick="exportData()">Exporteer Backup (JSON)</button>
+
+        <div class="chart-container">
+            <canvas id="moodChart"></canvas>
+        </div>
+
+        <div class="history-list" id="historyList"></div>
     </div>
 
-    <!-- Tab 2: Grafieken -->
-    <div class="card hidden" id="section-charts">
-        <h2 style="font-size: 1.2rem; margin-top: 0; color: var(--accent);">Voortgang over tijd</h2>
-        <p style="font-size: 0.85rem; color: #94A3B8; margin-bottom: 16px;">Hier zie je de opgeslagen vermoeidheid en statusontwikkeling.</p>
+    <!-- TAB 2: MS COPILOT -->
+    <div id="tab-copilot" class="tab-content">
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot">Hallo! Ik ben je persoonlijke MS Copilot. Vraag me gerust iets over symptoombeheersing, omgaan met vermoeidheid, tips voor warmtegevoeligheid of voorbereiding op je volgende neurolooggesprek. Waar kan ik je vandaag mee helpen?</div>
+            </div>
+            <div class="chat-input-row">
+                <input type="text" id="chatInput" placeholder="Typ je vraag..." onkeypress="handleChatKey(event)">
+                <button class="btn" onclick="sendChatMessage()">Verstuur</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: AGENDA -->
+    <div id="tab-agenda" class="tab-content">
+        <div class="form-group">
+            <label for="agendaDate">Datum Afspraak:</label>
+            <input type="date" id="agendaDate">
+        </div>
+        <div class="form-group">
+            <label for="agendaTitle">Onderwerp / Titel:</label>
+            <input type="text" id="agendaTitle" placeholder="Bijv. Controle Neuroloog UZ Leuven">
+        </div>
+        <div class="form-group">
+            <label for="agendaTime">Tijdstip:</label>
+            <input type="time" id="agendaTime">
+        </div>
+        <button class="btn" onclick="addAgendaItem()">Voeg toe aan Agenda</button>
+
+        <div class="history-list" id="agendaList" style="margin-top: 20px;"></div>
+    </div>
+
+    <!-- TAB 4: MEDICATIE (BELGIË) -->
+    <div id="tab-medicatie" class="tab-content">
+        <div class="form-group">
+            <label for="medSelect">Selecteer jouw actieve MS-medicatie (België):</label>
+            <select id="medSelect" onchange="saveMedication()">
+                <option value="">-- Geen / Maak keuze --</option>
+                <optgroup label="B-cel-therapieën (Infuus / Injectie)">
+                    <option value="Ocrevus (Ocrelizumab) - Infuus (2x per jaar)">Ocrevus (Ocrelizumab) - Infuus (2x/jaar)</option>
+                    <option value="Kesimpta (Ofatumumab) - Subcutane injectie (1x per maand)">Kesimpta (Ofatumumab) - Subcutane injectie (1x/maand)</option>
+                    <option value="Lemtrada (Alemtuzumab) - Infuustraject">Lemtrada (Alemtuzumab) - Infuustraject</option>
+                </optgroup>
+                <optgroup label="Orale therapieën (Tabletten / Capsules)">
+                    <option value="Tecfidera / Dimethylfumaraat - Capsule (2x per dag)">Tecfidera / Dimethylfumaraat - Capsule (2x/dag)</option>
+                    <option value="Mavenclad (Cladribine) - Jaarlijkse tablettenkuur">Mavenclad (Cladribine) - Tablettenkuur (jaarlijks)</option>
+                    <option value="Aubagio (Teriflunomide) - Tablet (1x per dag)">Aubagio (Teriflunomide) - Tablet (1x/dag)</option>
+                    <option value="Zeposia (Ozanimod) - Capsule (dagelijks)">Zeposia (Ozanimod) - Capsule (dagelijks)</option>
+                    <option value="Gilenya (Fingolimod) - Capsule (dagelijks)">Gilenya (Fingolimod) - Capsule (dagelijks)</option>
+                </optgroup>
+                <optgroup label="Injecteerbare therapieën (Immunomodulatoren)">
+                    <option value="Copaxone / Glatirameeracetaat - Injectie">Copaxone / Glatirameeracetaat - Injectie</option>
+                    <option value="Rebif / Avonex / Betaferon (Interferon beta)">Interferon beta (Rebif / Avonex / Betaferon) - Injectie</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <div id="activeMedDisplay" style="margin-top: 15px;"></div>
         
-        <div style="position: relative; height: 250px; width: 100%;">
-            <canvas id="progressChart"></canvas>
+        <div style="margin-top: 25px; background: var(--surface-card); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
+            <h4 style="margin-top: 0; color: var(--primary); font-size: 0.9rem;">Officiële Belgische Terugbetaling</h4>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0;">
+                Deze lijst omvat de door het RIZIV erkende en terugbetaalde disease-modifying therapies (DMT's) in België. Bespreek wijzigingen in je schema altijd direct met je neuroloog of MS-verpleegkundige.
+            </p>
         </div>
     </div>
+</div>
 
-    <script>
-        // Automatisch de huidige datum instellen
-        document.getElementById('entry-date').valueAsDate = new Date();
-
-        function switchTab(tabName) {
-            const formSection = document.getElementById('section-form');
-            const chartsSection = document.getElementById('section-charts');
-            const btnForm = document.getElementById('btn-form');
-            const btnCharts = document.getElementById('btn-charts');
-
-            if (tabName === 'form') {
-                formSection.classList.remove('hidden');
-                chartsSection.classList.add('hidden');
-                btnForm.classList.add('active');
-                btnCharts.classList.remove('active');
-            } else {
-                formSection.classList.add('hidden');
-                chartsSection.classList.remove('hidden');
-                btnCharts.classList.add('active');
-                btnForm.classList.remove('active');
-                loadChartData();
+<script>
+    // Dynamische PWA Manifest Blob aanmaken met het vernieuwde strakke app-icoon
+    const manifestData = {
+        "name": "MS Vita Geavanceerde Zorgmonitor",
+        "short_name": "MS Vita",
+        "start_url": "./index.html",
+        "display": "standalone",
+        "background_color": "#090d16",
+        "theme_color": "#090d16",
+        "icons": [
+            {
+                "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%230f172a'/%3E%3Cstop offset='100%25' stop-color='%2304060b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='120' fill='url(%23bg)'/%3E%3Cpath d='M256 110v292M110 256h292' stroke='%2306b6d4' stroke-width='48' stroke-linecap='round' opacity='0.25'/%3E%3Cpath d='M160 270l45-50 45 75 55-90 45 65' fill='none' stroke='%2338bdf8' stroke-width='22' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='350' cy='160' r='24' fill='%2306b6d4' opacity='0.8'/%3E%3C/svg%3E",
+                "sizes": "192x192 512x512",
+                "type": "image/svg+xml",
+                "purpose": "any maskable"
             }
-        }
+        ]
+    };
+    const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
+    document.getElementById('pwaManifest').href = URL.createObjectURL(manifestBlob);
 
-        function saveEntry() {
-            const entry = {
-                date: document.getElementById('entry-date').value,
-                status: document.getElementById('daily-status').value,
-                fatigue: document.getElementById('fatigue-level').value,
-                notes: document.getElementById('notes').value
-            };
+    // Automatische Service Worker registratie
+    if ('serviceWorker' in navigator) {
+        const swCode = `
+            self.addEventListener('install', (e) => {
+                e.waitUntil(caches.open('ms-vita-v3').then((cache) => cache.addAll(['./'])));
+            });
+            self.addEventListener('fetch', (e) => {
+                e.respondWith(caches.match(e.request).then((response) => response || fetch(e.request)));
+            });
+        `;
+        const swBlob = new Blob([swCode], { type: 'text/javascript' });
+        navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
+    }
 
-            let entries = JSON.parse(localStorage.getItem('ms_vita_entries') || '[]');
-            entries.push(entry);
-            localStorage.setItem('ms_vita_entries', JSON.stringify(entries));
+    // PWA Installatie prompt logica
+    let deferredPrompt;
+    const installBanner = document.getElementById('installBanner');
+    const installBtn = document.getElementById('installBtn');
 
-            alert('Dag succesvol opgeslagen!');
-        }
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBanner.style.display = 'flex';
+    });
 
-        let myChart = null;
-
-        function loadChartData() {
-            const entries = JSON.parse(localStorage.getItem('ms_vita_entries') || '[]');
-            
-            // Sorteer op datum
-            entries.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-            const labels = entries.map(e => e.date);
-            const fatigueData = entries.map(e => parseInt(e.fatigue));
-
-            const ctx = document.getElementById('progressChart').getContext('2d');
-            
-            if (myChart) {
-                myChart.destroy();
+    installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                installBanner.style.display = 'none';
             }
+            deferredPrompt = null;
+        }
+    });
 
-            myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Vermoeidheid (1-5)',
-                        data: fatigueData,
-                        borderColor: '#38BDF8',
-                        backgroundColor: 'rgba(56, 189, 248, 0.1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 5,
-                            ticks: { stepSize: 1, color: '#94A3B8' },
-                            grid: { color: '#334155' }
-                        },
-                        x: {
-                            ticks: { color: '#94A3B8' },
-                            grid: { color: '#334155' }
-                        }
-                    },
-                    plugins: {
-                        legend: { labels: { color: '#F8FAFC' } }
+    // Tab navigatie
+    function switchTab(evt, tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        evt.currentTarget.classList.add('active');
+        if(tabId === 'tab-monitor' && chart) chart.update();
+    }
+
+    document.getElementById('date').valueAsDate = new Date();
+    document.getElementById('agendaDate').valueAsDate = new Date();
+
+    let entries = JSON.parse(localStorage.getItem('ms_vita_entries')) || [];
+    let agenda = JSON.parse(localStorage.getItem('ms_vita_agenda')) || [];
+    let currentMed = localStorage.getItem('ms_vita_med') || '';
+    let chart;
+
+    if(currentMed) {
+        document.getElementById('medSelect').value = currentMed;
+        showActiveMed(currentMed);
+    }
+
+    // Monitor Logica
+    function initChart() {
+        const ctx = document.getElementById('moodChart').getContext('2d');
+        entries.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        const counts = {
+            'Goed (Weinig klachten)': 0,
+            'Matig (Vermoeid / Lichte last)': 0,
+            'Slecht (Veel klachten / Stijfheid)': 0,
+            'Rot (Flared-up / Zware dag)': 0
+        };
+
+        entries.forEach(e => { if (counts[e.status] !== undefined) counts[e.status]++; });
+
+        if (chart) chart.destroy();
+
+        chart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(counts),
+                datasets: [{
+                    data: Object.values(counts),
+                    backgroundColor: ['#10b981', '#f59e0b', '#f97316', '#ef4444'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#9ca3af', font: { size: 10 } }
                     }
                 }
-            });
+            }
+        });
+        updateHistory();
+    }
+
+    function updateHistory() {
+        const list = document.getElementById('historyList');
+        if (entries.length === 0) {
+            list.innerHTML = '<span style="font-size: 0.8rem; color: var(--text-muted);">Nog geen dagen geregistreerd.</span>';
+            return;
         }
-    </script>
+        list.innerHTML = '<strong>Recente registraties:</strong>';
+        [...entries].reverse().slice(0, 4).forEach(e => {
+            const div = document.createElement('div');
+            div.className = 'history-row';
+            let sym = e.symptoms?.length ? ` [${e.symptoms.join(', ')}]` : '';
+            div.innerHTML = `<span><strong>${e.date}</strong>: ${e.status} (Vermoeid: ${e.fatigue})${sym}</span>`;
+            list.appendChild(div);
+        });
+    }
+
+    function addEntry() {
+        const date = document.getElementById('date').value;
+        const status = document.getElementById('status').value;
+        const fatigue = document.getElementById('fatigue').value;
+        const notes = document.getElementById('notes').value;
+        const symptoms = [];
+        document.querySelectorAll('.symptom:checked').forEach(cb => symptoms.push(cb.value));
+
+        if (!date) return alert('Kies eerst een datum.');
+
+        entries = entries.filter(e => e.date !== date);
+        entries.push({ date, status, fatigue, symptoms, notes });
+        localStorage.setItem('ms_vita_entries', JSON.stringify(entries));
+        
+        initChart();
+        document.getElementById('notes').value = '';
+        document.querySelectorAll('.symptom').forEach(cb => cb.checked = false);
+        alert('Dag succesvol opgeslagen!');
+    }
+
+    function exportData() {
+        if (!entries.length) return alert('Geen data om te exporteren.');
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(entries, null, 2));
+        let anchor = document.createElement('a');
+        anchor.setAttribute("href", dataStr);
+        anchor.setAttribute("download", "ms_vita_backup.json");
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+    }
+
+    // MS Copilot Logica
+    function handleChatKey(e) { if(e.key === 'Enter') sendChatMessage(); }
+    
+    function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        const text = input.value.trim();
+        if(!text) return;
+
+        const messagesBox = document.getElementById('chatMessages');
+        const userDiv = document.createElement('div');
+        userDiv.className = 'message user';
+        userDiv.textContent = text;
+        messagesBox.appendChild(userDiv);
+        input.value = '';
+        messagesBox.scrollTop = messagesBox.scrollHeight;
+
+        setTimeout(() => {
+            const botDiv = document.createElement('div');
+            botDiv.className = 'message bot';
+            const lower = text.toLowerCase();
+            
+            if(lower.includes('vermoeid') || lower.includes('energie') || lower.includes('fatigue')) {
+                botDiv.textContent = 'Vermoeidheid (fatigue) is een veelvoorkomend symptoom bij MS. Probeer taken op te delen in kleine blokken en neem tijdig rust voordat de energie volledig op is ("pacing"). Helpt koeling of een rustmoment jou doorgaans?';
+            } else if(lower.includes('warmte') || lower.includes('zomer') || lower.includes('heet')) {
+                botDiv.textContent = 'Door warmte kunnen MS-symptomen tijdelijk verergeren (het fenomeen van Uhthoff). Dit komt doordat de zenuwgeleiding trager wordt bij verhoogde lichaamstemperatuur. Koelende kleding, koude dranken of airconditioning kunnen hierbij verlichting bieden.';
+            } else if(lower.includes('neuroloog') || lower.includes('arts') || lower.includes('afspraak')) {
+                botDiv.textContent = 'Bereid een afspraak met je neuroloog goed voor door je grafieken en notities uit de monitor te exporteren. Noteer vooraf je belangrijkste vragen, zoals veranderingen in mobiliteit of tintelingen.';
+            } else {
+                botDiv.textContent = 'Ik begrijp je vraag. Blijf je klachten nauwkeurig bijhouden in de monitor. Als je last hebt van plotselinge of ernstige uitval (een schub/schubachtige klachten), neem dan direct contact op met je MS-verpleegkundige of neuroloog.';
+            }
+
+            messagesBox.appendChild(botDiv);
+            messagesBox.scrollTop = messagesBox.scrollHeight;
+        }, 500);
+    }
+
+    // Agenda Logica
+    function addAgendaItem() {
+        const date = document.getElementById('agendaDate').value;
+        const title = document.getElementById('agendaTitle').value;
+        const time = document.getElementById('agendaTime').value;
+
+        if(!date || !title) return alert('Vul minimaal een datum en onderwerp in.');
+
+        agenda.push({ date, title, time });
+        agenda.sort((a,b) => new Date(a.date) - new Date(b.date));
+        localStorage.setItem('ms_vita_agenda', JSON.stringify(agenda));
+        
+        document.getElementById('agendaTitle').value = '';
+        renderAgenda();
+        alert('Afspraak toegevoegd aan je agenda!');
+    }
+
+    function renderAgenda() {
+        const list = document.getElementById('agendaList');
+        if(!agenda.length) {
+            list.innerHTML = '<span style="font-size: 0.8rem; color: var(--text-muted);">Geen geplande afspraken in de agenda.</span>';
+            return;
+        }
+        list.innerHTML = '<strong>Geplande Afspraken:</strong><br>';
+        agenda.forEach((item, idx) => {
+            const div = document.createElement('div');
+            div.className = 'card-item';
+            div.innerHTML = `
+                <div class="card-info">
+                    <h4>${item.title}</h4>
+                    <p>📅 ${item.date} ${item.time ? 'om ' + item.time : ''}</p>
+                </div>
+                <button class="btn" style="width: auto; padding: 6px 10px; font-size: 0.75rem; background: var(--danger);" onclick="removeAgenda(${idx})">Wis</button>
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    function removeAgenda(idx) {
+        agenda.splice(idx, 1);
+        localStorage.setItem('ms_vita_agenda', JSON.stringify(agenda));
+        renderAgenda();
+    }
+
+    // Medicatie Logica
+    function saveMedication() {
+        const val = document.getElementById('medSelect').value;
+        localStorage.setItem('ms_vita_med', val);
+        showActiveMed(val);
+    }
+
+    function showActiveMed(val) {
+        const box = document.getElementById('activeMedDisplay');
+        if(!val) {
+            box.innerHTML = '';
+            return;
+        }
+        box.innerHTML = `
+            <div style="background: var(--surface-card); border: 1px solid var(--border); padding: 12px; border-radius: 10px;">
+                <span style="font-size: 0.75rem; color: var(--text-muted);">Actief geregistreerd:</span>
+                <div style="margin-top: 6px;"><span class="med-badge">${val}</span></div>
+            </div>
+        `;
+    }
+
+    initChart();
+    renderAgenda();
+</script>
+
 </body>
 </html>
